@@ -1,0 +1,78 @@
+<!--
+Aerobatic is designed for single page applications. This index.html
+serves as the main entry page that is loaded when your application is
+hit via the a URL like http://<your_app_name>.aerobaticapp.com.
+-->
+
+<html>
+  <head>
+    <title>Aerobatic Starter Template</title>
+
+    <!--
+    Serve the original CSS in debug builds and a consolidated
+    minfied one for release builds.
+    -->
+    <link data-aero-build="release" rel="Stylesheet" href="app.min.css">
+
+    <link data-aero-build="debug" rel="Stylesheet" href="node_modules/normalize-css/normalize.css">
+    <link data-aero-build="debug" rel="Stylesheet" href="css/main.css">
+
+  	<link rel="icon" type="image/png" sizes="64x64" href="favicon.png">
+  </head>
+  <body>
+    <div id="centered">
+      <h1>SoundCloud Demo</h1>
+    </div>
+
+    <!--
+    Here you might declare 3rd party library scripts. You could point
+    to a public CDN or to local copies, perhaps managed through bower.
+    -->
+
+    <!--
+    For release builds the grunt file combines and
+    minifies all scripts into a single app.min.js
+    -->
+    <script src="http://connect.soundcloud.com/sdk.js"></script>
+    <script>
+    // initialize client with app credentials
+    SC.initialize({
+      // Use a different clientId for debug and release builds. You could potentially get
+      // around doing this by deploying once and always specify the release callback,
+      // i.e. http://appname.aerobaticapp.com/callback.html
+      client_id: __config__.buildType === 'debug' ? 'a43af67e9da13738f3727e3573d453fb' : '8357f0896b3dc383d517ba4ec1eafe6e',
+      redirect_uri: window.location.protocol + '//' + location.hostname + '/callback.html'
+    });
+
+    function onSoundCloudConnect() {
+      SC.get('/me', function(me) {
+        alert('Hello, ' + me.username);
+      });
+    }
+
+    // initiate auth popup
+    SC.connect({});
+
+    // Listen for message event from the popup
+    window.addEventListener("message", function(event) {
+      var eventData = JSON.parse(event.data);
+
+      if (eventData.event === 'SCConnect') {
+        var loc = new SC.URI(eventData.location, {decodeQuery: true, decodeFragment: true});
+
+        SC.accessToken(loc.fragment.access_token);
+        onSoundCloudConnect();
+      }
+    }, false);
+
+    </script>
+
+    <script data-aero-build="release" src="app.min.js"></script>
+
+    <!-- Individual scripts are only rendered in debug mode -->
+    <div data-aero-build="debug">
+      <script src="js/main.js"></script>
+      <script src="js/main.js"></script>
+    </div>
+  </body>
+</html>

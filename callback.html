@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>Connect with SoundCloud</title>
+  </head>
+  <script>
+    function callbackToParent() {
+      var eventData = {
+        event: 'SCConnect',
+        location: window.location.href
+      };
+
+      window.opener.postMessage(JSON.stringify(eventData), '*');
+      setTimeout(this.close, 100);
+    }
+  </script>
+  <body onload="callbackToParent()">
+    <b style="width: 100%; text-align: center;">This popup should automatically close in a few seconds</b>
+  </body>
+</html>
